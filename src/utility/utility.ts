@@ -1,9 +1,10 @@
 // src/api.ts
 import axios from "axios";
 import { USER_API_URL, ADMIN_API_URL } from "./constants";
-
+//console.log("userapiurl", USER_API_URL)
 export const loginWithGoogle = async (accessToken: string) => {
-  return await axios.post(`${USER_API_URL}/userLogin`, {
+//console.log(`USER_API_URL ===> ${USER_API_URL}`); 
+ return await axios.post(`${USER_API_URL}/userLogin`, {
     tokenResponse: { access_token: accessToken },
   });
 };
