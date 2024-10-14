@@ -101,11 +101,17 @@ export const adminGetUserList = async (token: string) => {
 
 export const adminUpdateStudentStatus = async (
   email: string,
+  role: string,
   newStatus: boolean,
   token: string
 ) => {
-  return axios.get(
-    `${ADMIN_API_URL}/adminManageStudentStatus/${email}/${newStatus}`,
+  return axios.post(
+    `${ADMIN_API_URL}/adminManageStudentStatus`,
+    {
+      email,
+      role,
+      status: newStatus
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -114,7 +120,6 @@ export const adminUpdateStudentStatus = async (
   );
 };
 
-// http://localhost:3001/user/userManageQueryStatus/66e9850497c08c0da0327a64/Open
 
 export const manageQueryStatus = async (
   queryId: string,
