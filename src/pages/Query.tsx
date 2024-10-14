@@ -54,6 +54,7 @@ const Query: React.FC = () => {
 
       setLoading(true);
       try {
+        console.log("query in useEffect ",queryId)
         const response = await fetchQueryById(queryId, token, role);
         setQuery(response.data.queryData);
         setMessages(response.data.queryData.conversation || []);
@@ -124,7 +125,7 @@ const Query: React.FC = () => {
     setLoading(true);
     try {
       const response = await manageQueryStatus(
-        query.queryId,
+        query.id,
         query.userEmail,
         token,
         role,
@@ -137,7 +138,7 @@ const Query: React.FC = () => {
           ...query,
           status: selectedStatus,
         });
-        navigate(role === "SupportAdmin" ? "/manage-queries" : "/queries");
+        navigate(role === "Admin" ? "/manage-queries" : "/queries");
       } else {
         toast.error("Failed to update query status. Please try again.");
       }
@@ -172,7 +173,7 @@ const Query: React.FC = () => {
               }}
             >
               <BackButton
-                url={role === "SupportAdmin" ? "/manage-queries" : "/queries"}
+                url={role === "Admin" ? "/manage-queries" : "/queries"}
               />
               {query.status.toLowerCase() !== "closed" && (
                 <>
@@ -235,7 +236,7 @@ const Query: React.FC = () => {
           {messages.length > 0 ? <ChatBox messages={messages} /> : <Spinner />}
           <MessageInput
             onSend={onSendMessage}
-            queryId={query.queryId}
+            queryId={query.id}
             status={query.status.toLowerCase() === "closed"}
           />
         </div>

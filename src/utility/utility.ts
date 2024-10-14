@@ -2,11 +2,32 @@
 import axios from "axios";
 import { USER_API_URL, ADMIN_API_URL } from "./constants";
 //console.log("userapiurl", USER_API_URL)
+export interface UserData {
+  name: string;
+  email: string;
+  contactNumber: string;
+  role: string;
+}
+
 export const loginWithGoogle = async (accessToken: string) => {
-//console.log(`USER_API_URL ===> ${USER_API_URL}`); 
- return await axios.post(`${USER_API_URL}/userLogin`, {
+  //console.log(`USER_API_URL ===> ${USER_API_URL}`); 
+  return await axios.post(`${USER_API_URL}/userLogin`, {
     tokenResponse: { access_token: accessToken },
   });
+};
+
+
+export const registerUser = async (formData: UserData, token: string) => {
+  const userData = formData;
+  console.log("Token ", token)
+  return await axios.post(`${ADMIN_API_URL}/registerUser`,
+    userData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const createQuery = async (
@@ -70,8 +91,8 @@ export const sendMessageApi = async (
   }
 };
 
-export const adminGetStudentsList = async (token: string) => {
-  return axios.get(`${ADMIN_API_URL}/adminViewStudentList`, {
+export const adminGetUserList = async (token: string) => {
+  return await axios.get(`${ADMIN_API_URL}/adminViewUserList`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -80,7 +101,7 @@ export const adminGetStudentsList = async (token: string) => {
 
 export const adminUpdateStudentStatus = async (
   email: string,
-  newStatus: "true" | "false",
+  newStatus: boolean,
   token: string
 ) => {
   return axios.get(
@@ -102,8 +123,9 @@ export const manageQueryStatus = async (
   role: string,
   selectedStatus: string
 ) => {
+  console.log("queryId inside manageQueryStatus ",queryId)
   let URL = `${ADMIN_API_URL}/adminManageQueryStatus`;
-  if (role !== "SupportAdmin") {
+  if (role !== "Admin") {
     URL = `${USER_API_URL}/userManageQueryStatus`;
   }
   try {

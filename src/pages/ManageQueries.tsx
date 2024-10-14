@@ -30,7 +30,7 @@ const ManageQueries: React.FC = () => {
         const response = await adminfetchQueries(token);
         const fetchedQueries: Query[] = response.data.raisedQueries.map(
           (query: Query) => ({
-            queryId: query.queryId,
+            id: query.id,
             userEmail: query.userEmail,
             subject: query.subject,
             status: query.status,
@@ -115,7 +115,7 @@ const ManageQueries: React.FC = () => {
         <DataGrid
           rows={queries.map((query, index) => ({
             id: index,
-            queryId: query.queryId,
+            queryId: query.id,
             updatedAt: query.updatedAt,
             email: query.userEmail,
             subject: query.subject,

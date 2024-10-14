@@ -28,9 +28,10 @@ const Queries: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetchQueries(token);
+        console.log("My Queries ",response);
         const fetchedQueries: Query[] = response.data.myQueries.map(
           (query: Query) => ({
-            queryId: query.queryId,
+            id: query.id,
             userEmail: query.userEmail,
             subject: query.subject,
             status: query.status,
@@ -40,6 +41,8 @@ const Queries: React.FC = () => {
             conversation: query.conversation || [],
           })
         );
+        console.log("fetched Queries  ",fetchedQueries);
+
 
         // Dispatch action to update the Redux store
         dispatch(setQueries(fetchedQueries));
@@ -116,7 +119,7 @@ const Queries: React.FC = () => {
         <DataGrid
           rows={queries.map((query, index) => ({
             id: index,
-            queryId: query.queryId,
+            queryId: query.id,
             updatedAt: query.updatedAt,
             email: query.userEmail,
             subject: query.subject,

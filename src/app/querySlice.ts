@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Conversation {
-  _id: string;
   sender: string;
   email: string;
   message: string;
@@ -10,7 +9,7 @@ export interface Conversation {
 }
 
 export interface Query {
-  queryId: string;
+  id: string;
   userEmail: string;
   subject: string;
   status: string;

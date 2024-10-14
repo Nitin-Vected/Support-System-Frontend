@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import Spinner from "../components/Spinner";
 import {
-  adminGetStudentsList,
+  adminGetUserList,
   adminUpdateStudentStatus,
 } from "../utility/utility";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -24,18 +24,21 @@ const StudentManagement: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<{
     email: string;
-    currentStatus: string;
-  } | null>(null); // State for selected student
+    currentStatus: boolean;
+  } | null>(null);
+  
   const token = useSelector(
     (state: RootState) => state.auth.userData?.token || ""
   );
 
+  // Fetch the student list when the component mounts
   useEffect(() => {
     const getStudents = async () => {
       setLoading(true);
       try {
-        const response = await adminGetStudentsList(token);
-        setStudents(response.data.studentList);
+        const response = await adminGetUserList(token);
+        console.log("response ==> ",response)
+        setStudents(response.data.userList);
       } catch (error) {
         console.error("Error fetching students:", error);
         setError("Failed to load students");
@@ -47,31 +50,34 @@ const StudentManagement: React.FC = () => {
     getStudents();
   }, [token]);
 
-  const handleOpenModal = (email: string, currentStatus: string) => {
+  // Open modal for confirming status change
+  const handleOpenModal = (email: string, currentStatus: boolean) => {
     setSelectedStudent({ email, currentStatus });
     setOpenModal(true);
   };
 
+  // Close the modal
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedStudent(null); // Reset the selected student
   };
 
+  // Handle status change confirmation
   const handleConfirmStatusChange = async () => {
     if (!selectedStudent) return;
-    console.log(selectedStudent);
 
     const { email, currentStatus } = selectedStudent;
-    const newStatus = currentStatus === "true" ? "false" : "true";
+    const newStatus = !currentStatus; // Toggle the current status
 
     setLoading(true);
     try {
       await adminUpdateStudentStatus(email, newStatus, token);
       setStudents(
         students.map((student) =>
-          student.email === email ? { ...student, status: newStatus } : student
+          student.email === email ? { ...student, isActive: newStatus } : student
         )
       );
+      // Optionally, display a success notification
       // toast.success("Student status updated successfully.");
     } catch (error) {
       console.error("Error updating student status:", error);
@@ -82,8 +88,8 @@ const StudentManagement: React.FC = () => {
     }
   };
 
+  // Define columns for DataGrid
   const columns: GridColDef[] = [
-    // { field: "id", headerName: "Id", minWidth: 150, flex: 1 },
     { field: "name", headerName: "Name", minWidth: 200, flex: 1 },
     { field: "email", headerName: "Email", minWidth: 250, flex: 1 },
     {
@@ -101,17 +107,17 @@ const StudentManagement: React.FC = () => {
       flex: 1,
     },
     {
-      field: "status",
+      field: "isActive",
       headerName: "Status",
       minWidth: 150,
       flex: 1,
       renderCell: (params) => (
         <Button
           variant="contained"
-          color={params.row.status === "true" ? "success" : "error"}
-          onClick={() => handleOpenModal(params.row.email, params.row.status)}
+          color={params.row.isActive ? "success" : "error"}
+          onClick={() => handleOpenModal(params.row.email, params.row.isActive)}
         >
-          {params.row.status === "true" ? "Active" : "Inactive"}
+          {params.row.isActive ? "Active" : "Inactive"}
         </Button>
       ),
     },
@@ -133,11 +139,9 @@ const StudentManagement: React.FC = () => {
               id: index,
               name: student.name,
               email: student.email,
-              contactNumber: student.contactNumber
-                ? student.contactNumber
-                : "-",
+              contactNumber: student.contactNumber || "-",
               role: student.role,
-              status: student.status,
+              isActive: student.isActive,
             }))}
             columns={columns}
             initialState={{
@@ -151,6 +155,8 @@ const StudentManagement: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* Modal for confirming status change */}
       <Dialog
         open={openModal}
         onClose={handleCloseModal}
