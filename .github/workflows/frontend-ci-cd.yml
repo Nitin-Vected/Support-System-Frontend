@@ -29,16 +29,24 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      # Step 5: Deploy the build to the EC2 server
+    # Step 5: Deploy the build to the EC2 server
       - name: Deploy to EC2
-        run: |
-          eval "$(ssh-agent -s)"  # Start the SSH agent
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -  # Add the SSH key
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"  # Clean up the old files
-          scp -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH  # Copy new files
-          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"  # Restart Nginx
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_PATH: ${{ secrets.EC2_PATH }}
+        run: |
+          # Start the SSH agent
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          
+          # Remove old files in the deployment directory
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
+          
+          # Copy the built files to the EC2 instance
+          scp -o StrictHostKeyChecking=no -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH
+          
+          # Restart Nginx
+          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
+
