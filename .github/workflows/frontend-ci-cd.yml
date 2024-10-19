@@ -1,55 +1,38 @@
-name: Deploy to EC2
+# Define the name of the workflow which will be displayed on GitHub UI.
+name: Continuous Integration
 
+# This will trigger on all pushes and pull requests
 on:
   push:
-    branches:
-      - main  # Change this to your default branch
+  pull_request:
 
+# Jobs is a list of jobs that will be executed in parallel on different runners.
 jobs:
-  deploy:
+  # Build is the name of the job that will be displayed on GitHub UI.
+  build:
+    # Runs-on specifies the type of runner that will execute the job.
     runs-on: ubuntu-latest
 
+    # Steps is a list of steps that will be executed in the job.
     steps:
+      # Uses the checkout action to check out the code.
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags.
 
+      # Install Node.js.
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Specify your Node.js version
+          node-version: '20.1.0'  # Specify the Node.js version.
 
-      - name: Install dependencies
+      # Install project dependencies.
+      - name: Install Dependencies
         run: npm install
 
-      - name: Build the application
-        run: npm run build  # Adjust according to your build command
+      # Build the application
+      - name: Build Application
+        run: npm run build  # Ensure this command matches your build script in package.json.
 
-      - name: Start SSH agent
-        run: |
-          eval "$(ssh-agent -s)"
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -  # Using echo to handle newlines
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Remove old files in the deployment directory
-        run: |
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_PATH: ${{ secrets.EC2_PATH }}
-
-      - name: Copy the built files to the EC2 instance
-        run: |
-          scp -o StrictHostKeyChecking=no -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_PATH: ${{ secrets.EC2_PATH }}
-
-      - name: Restart Nginx
-        run: |
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+      # Add additional steps here if needed for deployment, testing, etc.
