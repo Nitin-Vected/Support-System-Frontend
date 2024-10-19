@@ -49,3 +49,4 @@ jobs:
           
           # Restart Nginx
           ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
+          # this is yml file
