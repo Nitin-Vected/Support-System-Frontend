@@ -42,6 +42,10 @@ const UserForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             toast.error("Email is required!");
             return false;
         }
+        if (!contactNumber.trim()){
+            toast.error("Contact Number is required!");
+            return false;
+        }
         if (!contactNumber.trim()) {
             toast.error("Contact Number is required!");
             return false;
@@ -125,7 +129,6 @@ const UserForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     onChange={handleSelectChange}
                 >
                     <MenuItem value="Admin">Admin</MenuItem>
-                    <MenuItem value="Counsellor">Counsellor</MenuItem>
                     <MenuItem value="Student">Student</MenuItem>
                 </Select>
             </FormControl>

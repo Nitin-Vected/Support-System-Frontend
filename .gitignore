@@ -5,7 +5,7 @@
 /.pnp
 .pnp.js
 /.env
-
+/nginxDefaultConf.txt
 # testing
 /coverage
 

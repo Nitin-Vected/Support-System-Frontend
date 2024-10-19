@@ -36,7 +36,7 @@ const PaginationComponent = () => {
         const now = moment();
         const postDate = moment(date);
         const diff = now.diff(postDate, 'days');
-    
+
         if (diff === 0) {
             return 'Today';
         } else if (diff === 1) {

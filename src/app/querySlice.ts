@@ -37,14 +37,14 @@ const querySlice = createSlice({
       state.queries = action.payload;
     },
     updateQuery(state, action: PayloadAction<Query>) {
-      const index = state.queries.findIndex(query => query.queryId === action.payload.queryId);
+      const index = state.queries.findIndex(query => query.id === action.payload.id);
       if (index !== -1) {
         state.queries[index] = action.payload;
       }
     },
     addConversationMessage(state, action: PayloadAction<{ queryId: string; message: Conversation }>) {
       const { queryId, message } = action.payload;
-      const query = state.queries.find(q => q.queryId === queryId);
+      const query = state.queries.find(q => q.id === queryId);
       if (query) {
         query.conversation.push(message);
       }

@@ -33,10 +33,10 @@ const NewQuery: React.FC = () => {
       dispatch(setLoading(true));
       try {
         await createQuery(values.subject, values.description, token);
-        toast.success("Query created successfully!"); 
+        toast.success("Query created successfully!");
         navigate("/queries");
       } catch (error) {
-        toast.error("Failed to create query. Please try again."); 
+        toast.error("Failed to create query. Please try again.");
       } finally {
         dispatch(setLoading(false));
       }
