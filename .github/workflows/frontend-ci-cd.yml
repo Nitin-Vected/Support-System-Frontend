@@ -31,13 +31,14 @@ jobs:
 
       # Step 5: Deploy the build to the EC2 server
       - name: Deploy to EC2
+        run: |
+          eval "$(ssh-agent -s)"  # Start the SSH agent
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -  # Add the SSH key
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"  # Clean up the old files
+          scp -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH  # Copy new files
+          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"  # Restart Nginx
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_PATH: ${{ secrets.EC2_PATH }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
-          scp -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH
-          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
