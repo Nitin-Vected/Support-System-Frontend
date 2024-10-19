@@ -1,52 +1,52 @@
-name: Frontend CI/CD Pipeline
+name: Deploy to EC2
 
-# Trigger the workflow on push to the main branch
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your default branch
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the code from your repo
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      # Step 2: Set up Node.js to build the frontend
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: '20'  # Updated to Node.js version 20
+          node-version: '16'  # Specify your Node.js version
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Build the project with Vite
-      - name: Build the project
-        run: npm run build
+      - name: Build the application
+        run: npm run build  # Adjust according to your build command
 
-      # Step 5: Deploy the build to the EC2 server
-      - name: Deploy to EC2
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_PATH: ${{ secrets.EC2_PATH }}
+      - name: Start SSH agent
         run: |
-          # Start the SSH agent
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          
-          # Remove old files in the deployment directory
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
-          
-          # Copy the built files to the EC2 instance
-          scp -o StrictHostKeyChecking=no -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH
-          
-          # Restart Nginx
-          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
-          # this is yml file
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Remove old files in the deployment directory
+        run: ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_PATH: ${{ secrets.EC2_PATH }}
+
+      - name: Copy the built files to the EC2 instance
+        run: scp -o StrictHostKeyChecking=no -r dist/* $EC2_USER@$EC2_HOST:$EC2_PATH
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_PATH: ${{ secrets.EC2_PATH }}
+
+      - name: Restart Nginx
+        run: ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
