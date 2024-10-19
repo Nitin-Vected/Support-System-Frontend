@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # or your Node.js version
+          node-version: '20'  # Updated to Node.js version 20
 
       # Step 3: Install dependencies
       - name: Install dependencies
@@ -29,7 +29,7 @@ jobs:
       - name: Build the project
         run: npm run build
 
-    # Step 5: Deploy the build to the EC2 server
+      # Step 5: Deploy the build to the EC2 server
       - name: Deploy to EC2
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -39,7 +39,7 @@ jobs:
         run: |
           # Start the SSH agent
           eval "$(ssh-agent -s)"
-          echo "$(SSH_PRIVATE_KEY)" | tr -d '\r' | ssh-add -
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
           
           # Remove old files in the deployment directory
           ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
@@ -49,4 +49,3 @@ jobs:
           
           # Restart Nginx
           ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
-
