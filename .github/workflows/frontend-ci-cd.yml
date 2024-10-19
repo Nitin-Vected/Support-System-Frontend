@@ -39,7 +39,7 @@ jobs:
         run: |
           # Start the SSH agent
           eval "$(ssh-agent -s)"
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          echo "$(SSH_PRIVATE_KEY)" | tr -d '\r' | ssh-add -
           
           # Remove old files in the deployment directory
           ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "rm -rf $EC2_PATH/*"
