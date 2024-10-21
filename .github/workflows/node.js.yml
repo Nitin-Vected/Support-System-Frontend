@@ -25,12 +25,14 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd /home/ubuntu/Support-System-Frontend  # Navigate to the project directory
+        # Navigate to the cloned project directory
+        cd /home/ubuntu/Support-System-Frontend  # Ensure this is the correct path
         npm install
 
     - name: Build the project
       run: |
-        cd /home/ubuntu/Support-System-Frontend  # Navigate to the project directory
+        # Navigate to the project directory
+        cd /home/ubuntu/Support-System-Frontend
         npm run build --if-present
 
     - name: Test Nginx Configuration
