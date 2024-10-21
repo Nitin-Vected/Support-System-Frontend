@@ -18,13 +18,31 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: ../actions-runner-frontend  # Checkout into the specified directory
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install
-    - run: npm run build --if-present
-    - run: sudo nginx -t
-    - run: sudo systemctl restart nginx 
+
+    - name: Install dependencies
+      run: |
+        cd ../actions-runner-frontend  # Navigate to the checked-out directory
+        npm install
+
+    - name: Build the project
+      run: |
+        cd ../actions-runner-frontend  # Navigate to the checked-out directory
+        npm run build --if-present
+
+    - name: Test Nginx Configuration
+      run: |
+        sudo nginx -t
+
+    - name: Restart Nginx
+      run: |
+        sudo systemctl restart nginx
