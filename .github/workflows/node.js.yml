@@ -10,20 +10,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout code to parent directory
-      run: |
-        # Navigate to the home directory
-        cd /home/ubuntu
-        # Check if the directory exists
-        if [ ! -d "Support-System-Frontend" ]; then
-          # Clone if it doesn't exist
-          git clone https://github.com/Nitin-Vected/Support-System-Frontend.git
-        else
-          # If it exists, navigate into it and pull the latest changes
-          cd Support-System-Frontend
-          git pull origin main
-        fi
-
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
@@ -32,8 +18,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # Navigate to the cloned project directory
-        cd /home/ubuntu/Support-System-Frontend  # Ensure this is the correct path
+        # Navigate to the manually cloned project directory
+        cd /home/ubuntu/Support-System-Frontend
+        # List files to ensure we are in the correct directory
+        ls -la
         npm install
 
     - name: Build the project
