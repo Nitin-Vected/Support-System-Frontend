@@ -1,5 +1,5 @@
 name: React TypeScript CI
-
+ 
 on:
   push:
     branches: [ "main" ]
