@@ -10,27 +10,24 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout code to parent directory
-      run: |
-        # Navigate to the home directory
-        cd /home/ubuntu
-        # Clone the repository directly into the home directory
-        git clone https://github.com/Nitin-Vected/Support-System-Frontend.git
-
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
         cache: 'npm'
 
-    - name: Install dependencies
+    - name: Navigate to the project directory and install dependencies
       run: |
-        cd /home/ubuntu/Support-System-Frontend  # Navigate to the project directory
+        # Navigate to the manually cloned project directory
+        cd /home/ubuntu/Support-System-Frontend
+        # List files to ensure we are in the correct directory
+        ls -la
         npm install
 
     - name: Build the project
       run: |
-        cd /home/ubuntu/Support-System-Frontend  # Navigate to the project directory
+        # Navigate to the project directory
+        cd /home/ubuntu/Support-System-Frontend
         npm run build --if-present
 
     - name: Test Nginx Configuration
