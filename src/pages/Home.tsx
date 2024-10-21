@@ -45,7 +45,7 @@ const Home: React.FC = () => {
       {displayUserData.role === 'Admin' && (
         <>
           {/* Updated button to be at the top */}
-          <button onClick={handleOpen} className="btn btn-reverse btn-block">
+          <button onClick={handleOpen} style={{backgroundColor: "skyblue"}} className="btn btn-reverse btn-block">
             Register New User
           </button>
 
