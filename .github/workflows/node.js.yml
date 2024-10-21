@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
 
     steps:
@@ -20,7 +19,7 @@ jobs:
       run: |
         # Navigate to the manually cloned project directory
         cd /home/ubuntu/Support-System-Frontend
-        # List files to ensure we are in the correct directory
+        # Ensure package-lock.json exists
         ls -la
         npm install
 
